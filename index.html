@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign-Up | GIS Service Tracker</title>
+  <style>
+    /* signup.css */
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body: Professional animated gradient background */
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #1d2671, #c33764);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+/* Animated Gradient Background Keyframes */
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Container with Glassmorphism Effect & Fade-In */
+.container {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  text-align: center;
+  animation: fadeIn 1s ease-out;
+  width: 400px;
+}
+
+/* Fade-In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Heading Styling */
+h2 {
+  font-size: 2em;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* Form Group Styling */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #fff;
+}
+
+/* Input Fields Styling */
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 1em;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Button Styling */
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  margin-top: 10px;
+  background: #c33764;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  background: #a02855;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Admin Tool Button Specific Styling */
+.btn.admin {
+  background: #1d2671;
+  margin-top: 20px;
+}
+
+.btn.admin:hover {
+  background: #151f5e;
+}
+
+/* Modal styling */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  text-align: center;
+  position: relative;
+  animation: modalFadeIn 0.5s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content input[type="password"] {
+  width: 80%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
+.login{
+  text-decoration: none;
+}
+  </style>
+</head>
+<body>
+  <center class="container">
+    <h2>Sign-Up</h2>
+    <form id="signupForm">
+      <div class="form-group">
+        <label>Organization Name:</label>
+        <input type="text" value="Utility Data Contractors, India" readonly>
+      </div>
+      <div class="form-group">
+        <label>Employee Name:</label>
+        <input type="text" id="empName" required>
+      </div>
+      <div class="form-group">
+        <label>Employee ID:</label>
+        <input type="text" id="empID" required>
+      </div>
+      <div class="form-group">
+        <label>National Grid ID:</label>
+        <input type="text" id="gridID" required>
+      </div>
+      <div class="form-group">
+        <label>Password:</label>
+        <input type="password" id="password" required>
+      </div>
+      <center><button type="submit" class="btn">Register</button></center>
+    </form>
+    <!-- Admin Password Modal -->
+<div id="adminModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>Admin Login</h3>
+    <input type="password" id="adminPassword" placeholder="Enter admin password" />
+    <p id="adminError" style="color: red; display: none;">Incorrect password. Please try again.</p>
+    <button id="adminSubmit" class="btn">Submit</button>
+  </div>
+</div>
+<div>
+  <button id="adminTool" class="btn admin">Admin Tool</button>
+</div>
+<br>
+<a class="login" href="login.html">Already Registered? Login</a>
+
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      let empName = document.getElementById("empName").value;
+      let empID = document.getElementById("empID").value;
+      let gridID = document.getElementById("gridID").value;
+      let password = document.getElementById("password").value;
+      
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      users.push({ empName, empID, gridID, password });
+      localStorage.setItem("users", JSON.stringify(users));
+      
+      alert("Registration Successful!");
+      document.getElementById("signupForm").reset();
+    });
+    // Open the admin modal when Admin Tool button is clicked
+document.getElementById('adminTool').addEventListener('click', function() {
+  document.getElementById('adminModal').style.display = 'flex';
+});
+
+// Close the modal when the close icon is clicked
+document.querySelector('.close').addEventListener('click', function() {
+  document.getElementById('adminModal').style.display = 'none';
+  document.getElementById('adminError').style.display = 'none';
+});
+
+// Handle admin password submission
+document.getElementById('adminSubmit').addEventListener('click', function() {
+  const password = document.getElementById('adminPassword').value;
+  const adminPassword = 'admin123'; // Hard-coded admin password
+  if (password === "aman@!23") {
+    document.getElementById('adminModal').style.display = 'none';
+    window.location.href = 'view_users.html';
+  } else {
+    document.getElementById('adminError').style.display = 'block';
+  }
+});
+
+  </script>
+</body>
+</html>

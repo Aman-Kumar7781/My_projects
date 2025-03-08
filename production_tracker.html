@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Production Tracker | GIS Service Tracker</title>
+  <link rel="stylesheet" href="prod.css" />
+  <!-- Load Chart.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Load Chart.js Date Adapter for time scales -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>Production Tracker</h2>
+    
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle">
+      <button id="switchTheme" class="btn">Switch Theme</button>
+    </div>
+    
+    <!-- Date Selector -->
+    <div class="date-selector">
+      <label for="prodDate">Select Date for Production Tracking:</label>
+      <input type="date" id="prodDate" />
+    </div>
+    
+    <hr />
+    
+    <!-- Service Production Form -->
+    <div class="form-section">
+      <h3>Service Production</h3>
+      <form id="serviceForm">
+        <div class="form-group">
+          <label for="serviceTown">Town Name:</label>
+          <input type="text" id="serviceTown" required />
+        </div>
+        <div class="form-group">
+          <label for="serviceVersion">Version Name:</label>
+          <input type="text" id="serviceVersion" required />
+        </div>
+        <div class="form-group">
+          <label for="serviceProduction">Service Production:</label>
+          <input type="number" id="serviceProduction" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label for="productionHours">Production Hours:</label>
+          <input type="number" id="productionHours" step="0.01" required />
+        </div>
+        <button type="submit" class="btn">Submit Service Production</button>
+      </form>
+    </div>
+    <!-- Additional Service Details Form -->
+<div class="form-section">
+  <h3>Additional Service Details</h3>
+  <form id="additionalServiceForm">
+    <div class="form-group">
+      <label for="gridNo">Grid No.:</label>
+      <input type="text" id="gridNo" required>
+    </div>
+    <div class="form-group">
+      <label for="serviceID">Service ID:</label>
+      <input type="text" id="serviceID" required>
+    </div>
+    <div class="form-group">
+      <label for="houseAddress">House Address:</label>
+      <input type="text" id="houseAddress" required>
+    </div>
+    <div class="form-group">
+      <label for="serviceComment">Comment:</label>
+      <textarea id="serviceComment"></textarea>
+    </div>
+    <button type="submit" class="btn">Submit Additional Details</button>
+  </form>
+</div>
+
+    
+    <hr />
+    
+    <!-- Landbase Production Form -->
+    <div class="form-section">
+      <h3>Landbase Production</h3>
+      <form id="landbaseForm">
+        <div class="form-group">
+          <label for="landTown">Town Name:</label>
+          <input type="text" id="landTown" required />
+        </div>
+        <div class="form-group">
+          <label for="landVersion">Version Name:</label>
+          <input type="text" id="landVersion" required />
+        </div>
+        <div class="form-group">
+          <label for="propertyLine">Property Line:</label>
+          <input type="number" id="propertyLine" step="0.01" value="0" required />
+        </div>
+        <div class="form-group">
+          <label for="curbLine">Curb Line:</label>
+          <input type="number" id="curbLine" step="0.01" value="0" required />
+        </div>
+        <div class="form-group">
+          <label for="unknownLine">Unknown Line:</label>
+          <input type="number" id="unknownLine" step="0.01" value="0" required />
+        </div>
+        <div class="form-group">
+          <label for="dimensionLine">Dimension Line:</label>
+          <input type="number" id="dimensionLine" step="0.01" value="0" required />
+        </div>
+        <div class="form-group">
+          <label for="roadEdge">Road Edge:</label>
+          <input type="number" id="roadEdge" step="0.01" value="0" required />
+        </div>
+        <div class="form-group">
+          <label for="totalLandbase">Total Landbase:</label>
+          <input type="number" id="totalLandbase" readonly />
+        </div>
+        <button type="submit" class="btn">Submit Landbase Production</button>
+      </form>
+    </div>
+    
+    <hr />
+    
+    <!-- Production Charts Section -->
+    <div class="chart-section">
+      <h3>Production Progress Charts</h3>
+      <div class="chart-options">
+        <label for="recordType">Select Record Type:</label>
+        <select id="recordType">
+          <option value="service">Service Production</option>
+          <option value="landbase">Landbase Production</option>
+        </select>
+        <label for="chartType">Select Chart Type:</label>
+        <select id="chartType">
+          <option value="line">Line Chart</option>
+          <option value="bar">Bar Chart</option>
+          <option value="pie">Pie Chart</option>
+          <option value="doughnut">Doughnut Chart</option>
+          <option value="scatter">Scatter Chart</option>
+        </select>
+        <button class="btn" id="updateChartBtn">Update Chart</button>
+      </div>
+      <canvas id="productionChart"></canvas>
+    </div>
+    
+    <hr />
+    
+    <button class="btn" onclick="window.location.href='production_report.html'">Your Production Report</button>
+    <button class="btn" onclick="window.location.href='login.html'">Logout</button>
+  </div>
+  
+  <script>
+    // --- Theme Switching ---
+    const themes = ['theme-1', 'theme-2', 'theme-3', 'theme-4', 'theme-5'];
+    let currentThemeIndex = 0;
+    
+    if (localStorage.getItem('currentTheme')) {
+      currentThemeIndex = themes.indexOf(localStorage.getItem('currentTheme'));
+      if (currentThemeIndex === -1) currentThemeIndex = 0;
+      document.body.classList.add(themes[currentThemeIndex]);
+    } else {
+      document.body.classList.add(themes[currentThemeIndex]);
+      localStorage.setItem('currentTheme', themes[currentThemeIndex]);
+    }
+    
+    document.getElementById('switchTheme').addEventListener('click', function() {
+      document.body.classList.remove(themes[currentThemeIndex]);
+      currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+      document.body.classList.add(themes[currentThemeIndex]);
+      localStorage.setItem('currentTheme', themes[currentThemeIndex]);
+    });
+    
+    // --- Auto-calculate Total Landbase ---
+    const calculateTotal = () => {
+      const property = Number(document.getElementById('propertyLine').value) || 0;
+      const curb = Number(document.getElementById('curbLine').value) || 0;
+      const unknown = Number(document.getElementById('unknownLine').value) || 0;
+      const dimension = Number(document.getElementById('dimensionLine').value) || 0;
+      const road = Number(document.getElementById('roadEdge').value) || 0;
+      const total = property + curb + unknown + dimension + road;
+      document.getElementById('totalLandbase').value = total;
+    };
+    
+    ['propertyLine', 'curbLine', 'unknownLine', 'dimensionLine', 'roadEdge'].forEach(id => {
+      document.getElementById(id).addEventListener('input', calculateTotal);
+    });
+    
+    // Utility: Get selected date or default to today
+    const getSelectedDate = () => {
+      let date = document.getElementById('prodDate').value;
+      if (!date) {
+        const today = new Date();
+        date = today.toISOString().split('T')[0];
+      }
+      return date;
+    };
+    
+    // --- Form Submission Handlers ---
+    document.getElementById('serviceForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const record = {
+        date: getSelectedDate(),
+        town: document.getElementById('serviceTown').value,
+        version: document.getElementById('serviceVersion').value,
+        serviceProduction: document.getElementById('serviceProduction').value,
+        productionHours: document.getElementById('productionHours').value
+      };
+      let records = JSON.parse(localStorage.getItem('serviceProductionRecords')) || [];
+      records.push(record);
+      localStorage.setItem('serviceProductionRecords', JSON.stringify(records));
+      alert('Service Production Saved!');
+      this.reset();
+    });
+    
+    document.getElementById('landbaseForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const record = {
+        date: getSelectedDate(),
+        town: document.getElementById('landTown').value,
+        version: document.getElementById('landVersion').value,
+        propertyLine: Number(document.getElementById('propertyLine').value),
+        curbLine: Number(document.getElementById('curbLine').value),
+        unknownLine: Number(document.getElementById('unknownLine').value),
+        dimensionLine: Number(document.getElementById('dimensionLine').value),
+        roadEdge: Number(document.getElementById('roadEdge').value),
+        totalLandbase: Number(document.getElementById('totalLandbase').value)
+      };
+      let records = JSON.parse(localStorage.getItem('landbaseProductionRecords')) || [];
+      records.push(record);
+      localStorage.setItem('landbaseProductionRecords', JSON.stringify(records));
+      alert('Landbase Production Saved!');
+      this.reset();
+      calculateTotal();
+    });
+    
+    // --- Chart Integration ---
+    let chart; // global Chart instance
+    
+    function updateChart() {
+      const recordType = document.getElementById("recordType").value;
+      const chartType = document.getElementById("chartType").value;
+      let records = [];
+      let aggregation = {};
+      
+      if(recordType === "service") {
+        records = JSON.parse(localStorage.getItem("serviceProductionRecords")) || [];
+        records.forEach(record => {
+          const date = record.date;
+          const value = parseFloat(record.serviceProduction) || 0;
+          aggregation[date] = (aggregation[date] || 0) + value;
+        });
+      } else if(recordType === "landbase") {
+        records = JSON.parse(localStorage.getItem("landbaseProductionRecords")) || [];
+        records.forEach(record => {
+          const date = record.date;
+          const value = parseFloat(record.totalLandbase) || 0;
+          aggregation[date] = (aggregation[date] || 0) + value;
+        });
+      }
+      
+      const labels = Object.keys(aggregation).sort();
+      const dataValues = labels.map(date => aggregation[date]);
+      
+      let chartData;
+      if(chartType === "scatter") {
+        const scatterData = labels.map((date, index) => ({
+          x: new Date(date),
+          y: dataValues[index]
+        }));
+        chartData = {
+          datasets: [{
+            label: recordType === "service" ? "Service Production" : "Total Landbase",
+            data: scatterData,
+            backgroundColor: 'rgba(75,192,192,0.6)'
+          }]
+        };
+      } else {
+        chartData = {
+          labels: labels,
+          datasets: [{
+            label: recordType === "service" ? "Service Production" : "Total Landbase",
+            data: dataValues,
+            backgroundColor: 'rgba(75,192,192,0.6)',
+            borderColor: 'rgba(75,192,192,1)',
+            fill: false
+          }]
+        };
+      }
+      
+      let options = {};
+      if(chartType === "scatter") {
+        options = {
+          scales: {
+            x: {
+              type: 'time',
+              time: { unit: 'day' },
+              title: { display: true, text: 'Date' }
+            },
+            y: {
+              title: { display: true, text: recordType === "service" ? "Service Production" : "Total Landbase" }
+            }
+          }
+        };
+      } else {
+        options = {
+          scales: {
+            y: { beginAtZero: true, title: { display: true, text: recordType === "service" ? "Service Production" : "Total Landbase" } }
+          }
+        };
+      }
+      
+      if(chart) chart.destroy();
+      const ctx = document.getElementById('productionChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: chartType === "scatter" ? "scatter" : chartType,
+        data: chartData,
+        options: options
+      });
+    }
+    
+    document.getElementById('updateChartBtn').addEventListener('click', updateChart);
+
+    document.getElementById('additionalServiceForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      const record = {
+        date: getSelectedDate(),
+        gridNo: document.getElementById('gridNo').value,
+        serviceID: document.getElementById('serviceID').value,
+        houseAddress: document.getElementById('houseAddress').value,
+        comment: document.getElementById('serviceComment').value
+      };
+      let records = JSON.parse(localStorage.getItem('additionalServiceRecords')) || [];
+      records.push(record);
+      localStorage.setItem('additionalServiceRecords', JSON.stringify(records));
+      alert('Additional Service Details Saved!');
+      this.reset();
+    });
+    
+  </script>
+</body>
+</html>

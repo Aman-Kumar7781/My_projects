@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registered Users</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Registered Users</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Employee Name</th>
+          <th>Employee ID</th>
+          <th>National Grid ID</th>
+          <th>Password</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="userTable"></tbody>
+    </table>
+    <button class="btn" onclick="window.location.href='index.html'">Back</button>
+  </div>
+  
+  <script>
+    // Render the table rows based on localStorage data
+    function renderTable() {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      let tableBody = document.getElementById("userTable");
+      tableBody.innerHTML = '';
+      users.forEach((user, index) => {
+        let row = document.createElement("tr");
+        row.innerHTML = `<td>${user.empName}</td>
+                         <td>${user.empID}</td>
+                         <td>${user.gridID}</td>
+                         <td>${user.password}</td>
+                         <td>
+                           <button class="btn update" onclick="updateUser(${index})">Update</button>
+                           <button class="btn delete" onclick="deleteUser(${index})">Delete</button>
+                         </td>`;
+        tableBody.appendChild(row);
+      });
+    }
+    
+    // Delete a user from localStorage and update the table
+    function deleteUser(index) {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      if (confirm("Are you sure you want to delete this user?")) {
+        users.splice(index, 1);
+        localStorage.setItem("users", JSON.stringify(users));
+        renderTable();
+      }
+    }
+    
+    // Update a user using prompt dialogs and refresh the table
+    function updateUser(index) {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      let user = users[index];
+      let newEmpName = prompt("Enter new Employee Name:", user.empName);
+      if(newEmpName === null) return;
+      let newEmpID = prompt("Enter new Employee ID:", user.empID);
+      if(newEmpID === null) return;
+      let newGridID = prompt("Enter new National Grid ID:", user.gridID);
+      if(newGridID === null) return;
+      let newPassword = prompt("Enter new Password:", user.password);
+      if(newPassword === null) return;
+      
+      user.empName = newEmpName;
+      user.empID = newEmpID;
+      user.gridID = newGridID;
+      user.password = newPassword;
+      users[index] = user;
+      localStorage.setItem("users", JSON.stringify(users));
+      renderTable();
+    }
+    
+    document.addEventListener("DOMContentLoaded", renderTable);
+  </script>
+</body>
+</html>

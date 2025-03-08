@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | GIS Service Tracker</title>
+  <style>
+   /* login.css */
+
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body styling with animated dark gradient background */
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* Animated gradient background keyframes */
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Container styling with glassmorphism effect */
+  .container {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    animation: fadeIn 1s ease-out;
+    width: 350px;
+  }
+  
+  /* Fade in animation for container */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Heading styling */
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em;
+    color: #fff;
+  }
+  
+  /* Form group styling */
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 0.9em;
+  }
+  
+  /* Input field styling */
+  .form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .form-group input:focus {
+    border-color: #f39c12;
+    box-shadow: 0 0 8px rgba(243, 156, 18, 0.5);
+    outline: none;
+  }
+  
+  /* Button styling */
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #f39c12;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.5);
+  }
+  
+  /* Link styling */
+  a {
+    color: #f39c12;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  a:hover {
+    color: #e67e22;
+  }
+  
+  /* Paragraph styling */
+  p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+  }
+  
+  
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label>National Grid ID:</label>
+        <input type="text" id="gridID" required>
+      </div>
+      <div class="form-group">
+        <label>Password:</label>
+        <input type="password" id="password" required>
+      </div>
+      <center><button type="submit" class="btn">Login</button></center>
+    </form>
+    <center><p>Don't have an account? <a href="index.html">Sign Up</a></p></center>
+  </div>
+  
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      let gridID = document.getElementById("gridID").value;
+      let password = document.getElementById("password").value;
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      let validUser = users.find(user => user.gridID === gridID && user.password === password);
+      if (validUser) {
+        alert("Login Successful!");
+        window.location.href = "production_tracker.html";
+      } else {
+        alert("Invalid National Grid ID or Password!");
+      }
+    });
+  </script>
+</body>
+</html>
